@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Bản đồ Hành chính Việt Nam</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="header-top">
+                <h1>Food time?</h1>
+                <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+            </div>
+            <div class="controls" id="controls-panel">
+                <div class="search-box">
+                    <input type="text" id="search-input" placeholder="Tìm kiếm địa điểm...">
+                    <button id="search-btn"><i class="fas fa-search"></i></button>
+                    <button id="show-markers-list" class="search-markers-btn" title="Danh sách mốc đã lưu">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+                <div class="layer-control">
+                    <label for="icon-filter-select">
+                        <strong>Lọc theo loại:</strong>
+                    </label>
+                    <select id="icon-filter-select" class="icon-filter-dropdown">
+                        <option value="all">Tất cả</option>
+                        <option value="restaurant">🍴 Quán ăn</option>
+                        <option value="home">🏠 Nhà nghỉ</option>
+                        <option value="store">🏪 Cửa hàng</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <div id="map"></div>
+
+        <!-- Nút điều khiển nổi cho mobile -->
+        <div class="floating-controls">
+            <button id="locate-btn" class="floating-btn" title="Vị trí của tôi">
+                <i class="fas fa-crosshairs"></i>
+            </button>
+            <button id="add-marker-btn" class="floating-btn" title="Thêm mốc đánh dấu">
+                <i class="fas fa-map-marker-alt"></i>
+            </button>
+        </div>
+
+        <!-- Panel thông tin -->
+        <div class="info-panel" id="info-panel">
+            <div class="panel-header">
+                <h3>Thông tin</h3>
+                <button id="close-panel" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="area-info">Chọn một khu vực trên bản đồ</div>
+        </div>
+
+        <!-- Modal thêm marker -->
+        <div id="marker-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Thêm mốc đánh dấu</h3>
+                    <button id="close-modal" class="close-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="marker-name">Tên địa điểm:</label>
+                        <input type="text" id="marker-name" placeholder="Nhập tên địa điểm...">
+                    </div>
+                    <div class="form-group">
+                        <label for="marker-desc">Mô tả (tuỳ chọn):</label>
+                        <textarea id="marker-desc" placeholder="Nhập mô tả..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="marker-icon">Loại địa điểm:</label>
+                        <div class="icon-select" id="icon-select">
+                            <button class="icon-option selected" data-icon="restaurant"><i class="fas fa-utensils"></i>
+                                Quán
+                                ăn</button>
+                            <button class="icon-option" data-icon="home"><i class="fas fa-home"></i> Nhà
+                                nghỉ</button>
+                            <button class="icon-option" data-icon="store"><i class="fas fa-store"></i> Cửa hàng</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="marker-color">Màu sắc:</label>
+                        <div class="color-select" id="color-select">
+                            <button class="color-option selected" data-color="#e74c3c"
+                                style="background:#e74c3c"></button>
+                            <button class="color-option" data-color="#3498db" style="background:#3498db"></button>
+                            <button class="color-option" data-color="#2ecc71" style="background:#2ecc71"></button>
+                            <button class="color-option" data-color="#f39c12" style="background:#f39c12"></button>
+                            <button class="color-option" data-color="#9b59b6" style="background:#9b59b6"></button>
+                            <button class="color-option" data-color="#1abc9c" style="background:#1abc9c"></button>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button id="save-marker" class="btn-primary">Lưu mốc</button>
+                        <button id="cancel-marker" class="btn-secondary">Huỷ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách markers -->
+        <div id="markers-list" class="markers-list">
+            <div class="markers-header">
+                <h3>Danh sách mốc</h3>
+                <button id="close-markers-list" class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="markers-container"></div>
+        </div>
+
+        <!-- Modal đánh giá và bình luận -->
+        <div id="review-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Đánh giá và bình luận</h3>
+                    <button id="close-review-modal" class="close-btn"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div id="review-marker-name" style="font-weight:600;margin-bottom:15px;color:#2c3e50;"></div>
+
+                    <div class="form-group">
+                        <label>Đánh giá:</label>
+                        <div class="star-rating" id="star-rating">
+                            <i class="fas fa-star" data-rating="1"></i>
+                            <i class="fas fa-star" data-rating="2"></i>
+                            <i class="fas fa-star" data-rating="3"></i>
+                            <i class="fas fa-star" data-rating="4"></i>
+                            <i class="fas fa-star" data-rating="5"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="review-comment">Bình luận:</label>
+                        <textarea id="review-comment" placeholder="Nhập bình luận của bạn..." rows="3"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="review-author">Tên của bạn:</label>
+                        <input type="text" id="review-author" placeholder="Nhập tên (tùy chọn)">
+                    </div>
+
+                    <div class="reviews-list" id="reviews-list">
+                        <h4 style="margin-bottom:10px;color:#2c3e50;">Đánh giá trước đó:</h4>
+                        <div id="reviews-container"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="save-review" class="btn-primary">Gửi đánh giá</button>
+                        <button id="cancel-review" class="btn-secondary">Hủy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-boundary-canvas@latest/dist/leaflet-boundary-canvas.js"></script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Config -->
+    <script src="js/firebase-config.js"></script>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
