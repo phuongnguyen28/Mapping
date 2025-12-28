@@ -4,13 +4,13 @@
 // 2. Thay đổi các giá trị YOUR_XXX bằng config thật từ Firebase Console
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCEE7E-GQiBbtmSohhOfy78NTvHVJrjlmA",
-    authDomain: "food-map-11c45.firebaseapp.com",
-    projectId: "food-map-11c45",
-    storageBucket: "food-map-11c45.firebasestorage.app",
-    messagingSenderId: "405776170684",
-    appId: "1:405776170684:web:25e27d0aba81371c46dab9",
-    measurementId: "G-DCPB8RY92S"
+    apiKey: "YOUR_API_KEY_HERE",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID",
+    measurementId: "YOUR_MEASUREMENT_ID"
 };
 
 // Khởi tạo Firebase
