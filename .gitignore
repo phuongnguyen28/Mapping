@@ -1,6 +1,3 @@
-# Firebase Config (chứa API keys)
-js/firebase-config.js
-
 # Node modules
 node_modules/
 
