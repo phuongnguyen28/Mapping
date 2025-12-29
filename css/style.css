@@ -895,6 +895,19 @@ h1 {
 }
 
 /* =============================================
+   SEARCH RESULTS STYLES
+   ============================================= */
+
+.add-marker-btn:hover {
+    background: #2980b9 !important;
+    transform: scale(1.05);
+}
+
+.add-marker-btn:active {
+    transform: scale(0.95);
+}
+
+/* =============================================
    LOGIN PAGE STYLES
    ============================================= */
 

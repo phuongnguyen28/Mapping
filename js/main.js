@@ -400,11 +400,22 @@ function createSearchResultItem(result, source) {
         const shortName = nameParts.slice(0, 3).join(',');
 
         div.innerHTML = `
-            <div style="font-weight:600;color:#2c3e50;margin-bottom:4px;">${shortName}</div>
-            <div style="font-size:12px;color:#7f8c8d;">${prettyType}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div style="flex:1;">
+                    <div style="font-weight:600;color:#2c3e50;margin-bottom:4px;">${shortName}</div>
+                    <div style="font-size:12px;color:#7f8c8d;">${prettyType}</div>
+                </div>
+                <button class="add-marker-btn" style="padding:8px 12px;background:#3498db;color:white;border:none;border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap;margin-left:8px;">
+                    <i class="fas fa-map-marker-alt"></i> Thêm mốc
+                </button>
+            </div>
         `;
 
-        div.addEventListener('click', function () {
+        // Xử lý click vào item (không bao gồm nút)
+        div.addEventListener('click', function (e) {
+            // Nếu click vào nút "Thêm mốc", không xử lý
+            if (e.target.closest('.add-marker-btn')) return;
+
             map.setView([result.lat, result.lon], 17);
 
             // Tạo marker tạm thời
@@ -430,6 +441,33 @@ function createSearchResultItem(result, source) {
 
             document.getElementById('search-results').style.display = 'none';
             document.getElementById('search-input').value = '';
+        });
+
+        // Xử lý click nút "Thêm mốc"
+        const addBtn = div.querySelector('.add-marker-btn');
+        addBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+
+            // Đặt vị trí tạm thời
+            tempMarkerPos = { lat: result.lat, lng: result.lon };
+
+            // Mở modal thêm marker với tên gợi ý
+            openMarkerModal(false);
+
+            // Điền sẵn tên địa điểm
+            setTimeout(() => {
+                document.getElementById('marker-name').value = shortName;
+                document.getElementById('marker-desc').value = prettyType;
+            }, 100);
+
+            // Bay đến vị trí
+            map.setView([result.lat, result.lon], 17);
+
+            // Ẩn kết quả tìm kiếm
+            document.getElementById('search-results').style.display = 'none';
+            document.getElementById('search-input').value = '';
+
+            showToast('Đã chọn vị trí. Điền thông tin và lưu!');
         });
     }
 
