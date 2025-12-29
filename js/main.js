@@ -1034,13 +1034,18 @@ function addMarkerToMap(data) {
                 ${data.desc ? '<br><span style="color:#7f8c8d;font-size:12px">' + data.desc + '</span>' : ''}
                 <br><small style="color:#95a5a6">${data.lat.toFixed(6)}, ${data.lng.toFixed(6)}</small>
                 <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-                    <a href="${googleMapsUrl}" target="_blank" style="display:inline-block;padding:6px 12px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;font-size:12px;">
-                        <i class="fas fa-map-marked-alt"></i> Google Maps
+                    <a href="${googleMapsUrl}" target="_blank" style="flex:1;display:inline-block;padding:6px 12px;background:#4285f4;color:white;text-decoration:none;border-radius:4px;font-size:12px;text-align:center;">
+                        <i class="fas fa-map-marked-alt"></i> Maps
                     </a>
-                    <button onclick="openMarkerModal(true, '${data.id}')" style="padding:6px 12px;background:#3498db;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
-                        <i class="fas fa-edit"></i> Chỉnh sửa
+                    <button onclick="deleteMarkerFromPopup('${data.id}')" style="flex:1;padding:6px 12px;background:#e74c3c;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
+                        <i class="fas fa-trash"></i> Xóa
                     </button>
-                    <button onclick="openReviewModal('${data.id}')" style="padding:6px 12px;background:#f39c12;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
+                </div>
+                <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+                    <button onclick="openMarkerModal(true, '${data.id}')" style="flex:1;padding:6px 12px;background:#3498db;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
+                        <i class="fas fa-edit"></i> Sửa
+                    </button>
+                    <button onclick="openReviewModal('${data.id}')" style="flex:1;padding:6px 12px;background:#f39c12;color:white;border:none;border-radius:4px;font-size:12px;cursor:pointer;">
                         <i class="fas fa-star"></i> Đánh giá
                     </button>
                 </div>
@@ -1241,17 +1246,6 @@ function renderMarkersList() {
                 ${avgRating ? `<div class="marker-item-rating"><span class="average-rating"><i class="fas fa-star"></i> ${avgRating}</span> (${reviews.length} đánh giá)</div>` : ''}
                 <div class="marker-item-desc">${marker.desc || 'Không có mô tả'}</div>
             </div>
-            <div class="marker-item-actions">
-                <a href="${googleMapsUrl}" target="_blank" class="marker-item-gmaps" title="Mở Google Maps">
-                    <i class="fas fa-map-marked-alt"></i>
-                </a>
-                <button class="marker-item-edit" data-id="${marker.id}" title="Chỉnh sửa">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="marker-item-delete" data-id="${marker.id}" title="Xóa">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
         </div>
         `;
     }).join('');
@@ -1259,10 +1253,6 @@ function renderMarkersList() {
     // Click vào marker item để bay đến
     document.querySelectorAll('.marker-item').forEach(item => {
         item.addEventListener('click', function (e) {
-            if (e.target.closest('.marker-item-delete')) return;
-            if (e.target.closest('.marker-item-edit')) return;
-            if (e.target.closest('.marker-item-gmaps')) return;
-
             const id = this.dataset.id; // Không convert sang int vì Firestore ID là string
             const marker = savedMarkers.find(m => m.id === id);
             if (marker) {
@@ -1282,24 +1272,15 @@ function renderMarkersList() {
             }
         });
     });
+}
 
-    // Edit marker
-    document.querySelectorAll('.marker-item-edit').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const id = this.dataset.id; // Firestore ID là string
-            openMarkerModal(true, id);
-        });
-    });
+// Xóa marker từ popup (trên bản đồ)
+function deleteMarkerFromPopup(id) {
+    // Đóng popup trước
+    map.closePopup();
 
-    // Xoá marker
-    document.querySelectorAll('.marker-item-delete').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const id = this.dataset.id; // Firestore ID là string
-            deleteMarker(id);
-        });
-    });
+    // Gọi hàm xóa chung
+    deleteMarker(id);
 }
 
 async function deleteMarker(id) {
