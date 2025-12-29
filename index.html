@@ -18,7 +18,12 @@
         <header>
             <div class="header-top">
                 <h1>Food time?</h1>
-                <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+                <div>
+                    <button onclick="logout()" class="logout-btn" title="Đăng xuất">
+                        <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                    </button>
+                    <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+                </div>
             </div>
             <div class="controls" id="controls-panel">
                 <div class="search-box">
@@ -170,9 +175,13 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 
     <!-- Firebase Config -->
     <script src="js/firebase-config.js"></script>
+
+    <!-- Authentication -->
+    <script src="js/auth.js"></script>
 
     <script src="js/main.js"></script>
 </body>
